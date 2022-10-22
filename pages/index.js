@@ -66,37 +66,6 @@ export default function Home() {
               </div>
             </div>
           </nav>
-          {/* <nav className="navbar navbar-expand-lg bg-primary fixed-top">
-            <div className="container-fluid">
-              <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-                <span className="navbar-toggler-icon"></span>
-              </button>
-              <div className="collapse navbar-collapse overflow-visible" id="navbarTogglerDemo01">
-                <a className="navbar-brand text-white" href="#">
-                  <Image
-                    src={jalaSeater}
-                    className="logo"
-                    alt="mainIllustration"
-                    height={48}
-                  />
-                </a>
-                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                  <li className="nav-item">
-                    <a className="nav-link active" aria-current="page" href="#">&nbsp;</a>
-                  </li>
-                  <li className="nav-item">
-                    <a className="nav-link" href="#">&nbsp;</a>
-                  </li>
-                  <li className="nav-item">
-                    <a className="nav-link disabled">&nbsp;</a>
-                  </li>
-                </ul>
-                <form className="d-flex" role="search">
-                  <button className="btn btn-danger" type="submit">Tinggalkan Kursi</button>
-                </form>
-              </div>
-            </div>
-          </nav> */}
         </header>
         <div className='container mt-5 pt-5 pt-md-5 mx-md-5'>
           <div className="row">
@@ -113,8 +82,8 @@ export default function Home() {
                       />
                     </div>
                     <div className="col d-flex flex-column h-100 justify-content-start">
-                      <h2 className='text-primary'>12:34 PM</h2>
-                      <span>Sat, 22 Oct 2022</span>
+                      <h2 className='text-primary'>{moment().format("h:mm A")}</h2>
+                      <span>{moment().format("ddd, DD MMM YYYY")}</span>
                       <p>🏢 Sahid J-Walk (Yogyakarta)</p>
                     </div>
                   </div>
