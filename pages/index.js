@@ -10,6 +10,7 @@ import chairOutline from '../public/assets/images/chair-outline.svg'
 import chairBlue from '../public/assets/images/chair-blue.svg'
 import chairGreen from '../public/assets/images/chair-green.svg'
 import jalaSeater from '../public/assets/images/jala-seater.svg'
+import moment from "moment/moment";
 
 const fetcher = async (
   input = RequestInfo,
@@ -519,13 +520,13 @@ export default function Home() {
                 />
                 <span>Tersedia</span>
               </div>
-              <div>
+              {/* <div>
                 <Image
                   src={chairBlue}
                   alt="dipilih"
                 />
                 <span>Dipilih</span>
-              </div>
+              </div> */}
               <div>
                 <Image
                   src={chairGreen}
