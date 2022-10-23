@@ -93,7 +93,7 @@ export default function Home() {
   // console.log("CreateData",CreateData)
   console.log('AIRTABLE_BASE:',process.env.AIRTABLE_BASE)
   console.log('AIRTABLE_API_KEY:',process.env.AIRTABLE_API_KEY)
-  console.log('fetchSeats:',fetchSeats)
+  // console.log('fetchSeats:',fetchSeats)
   // console.log('modelData',modelData)
   // console.log("bookingSeat",bookingSeat)
   if(loading == true){
