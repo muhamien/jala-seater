@@ -1,26 +1,23 @@
 /** @type {import('next').NextConfig} */
 
-const withPWA = require("next-pwa");
-
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: false
+})
 module.exports = withPWA({
-  // reactStrictMode: true,
-  // env: {
-  //   AIRTABLE_API_KEY: "keyHA9y1ULTuiFbip",
-  //   AIRTABLE_BASE: "apprPGufGULFFjdvQ",
-  //   AIRTABLE_TABLE: "chair",
-  // },
-  pwa: {
-    dest: "public",
-    register: true,
-    skipWaiting: true,
-  },
-});
-
-module.exports = {
   reactStrictMode: true,
   env: {
     AIRTABLE_API_KEY: "keyHA9y1ULTuiFbip",
     AIRTABLE_BASE: "apprPGufGULFFjdvQ",
     AIRTABLE_TABLE: "chair",
   },
-};
+});
+
+// module.exports = {
+//   env: {
+//     AIRTABLE_API_KEY: "keyHA9y1ULTuiFbip",
+//     AIRTABLE_BASE: "apprPGufGULFFjdvQ",
+//     AIRTABLE_TABLE: "chair",
+//   },
+// };
