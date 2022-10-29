@@ -1,5 +1,7 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+Create your own Airtable, follow this link: https://whimsical.com/booking-4dVQPS91o5sRr6UM4EcqvN
+
 ## Getting Started (JALA SEATER)
 
 First, run the development server:
