@@ -2,15 +2,15 @@
 
 const withPWA = require('next-pwa')({
   dest: 'public',
-  register: false,
+  register: true,
   skipWaiting: false
 });
 
 module.exports = withPWA({
   reactStrictMode: true,
   env: {
-    AIRTABLE_API_KEY: "",
-    AIRTABLE_BASE: "",
-    AIRTABLE_TABLE: "",
+    AIRTABLE_API_KEY: "keyHA9y1ULTuiFbip",
+    AIRTABLE_BASE: "apprPGufGULFFjdvQ",
+    AIRTABLE_TABLE: "chair",
   },
 });

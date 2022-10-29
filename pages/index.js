@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import useSWR from "swr";
-import axios from "axios";
 import Head from 'next/head'
 import Image from 'next/image'
 // import styles from '../styles/Home.module.css'
@@ -13,89 +12,77 @@ import chairBlue from '../public/assets/images/chair-blue.svg'
 import chairGreen from '../public/assets/images/chair-green.svg'
 import jalaSeater from '../public/assets/images/jala-seater.svg'
 import moment from "moment/moment";
-import Script from 'next/script'
-
-const fetcher = async (
-  input = RequestInfo,
-  init = RequestInit,
-) => {
-  const res = await fetch(input, init);
-  return res.json();
-};
-// const fetcher = (...args) => fetch(...args).then((res) => res.json());
+import Script from 'next/script';
+import axios from "axios";
 
 export default function Home() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [loading, setLoading] = useState(true);
   const [selectedSeat, setSelectedSeat] = useState("");
+  const [data, setData] = useState();
   const [rowA, setRowA] = useState({});
   const [rowB, setRowB] = useState({});
   const [rowC, setRowC] = useState({});
   const [rowD, setRowD] = useState({});
+  const [bookModel, setBookModel] = useState({});
+  
+  const fetcher = async (url) => await axios.get(url, {
+    headers: {
+      Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  }).then(res => {
+    setData(res.data); 
+    setRowA(res.data.records.filter((i)=>(i.fields.row_name == "A")))
+    setRowB(res.data.records.filter((i)=>(i.fields.row_name == "B")))
+    setRowC(res.data.records.filter((i)=>(i.fields.row_name == "C")))
+    setRowD(res.data.records.filter((i)=>(i.fields.row_name == "D")))
+  }).catch(error=>console.error(error)).finally(()=>{setLoading(false)})
 
-  useEffect(() => {
-    // setRowA(fetchSeats.data.records.filter((i)=>(i.row_name == "A")))
-    // setRowB(fetchSeats.data.records.filter((i)=>(i.row_name == "B")))
-    // setRowC(fetchSeats.data.records.filter((i)=>(i.row_name == "C")))
-    // setRowD(fetchSeats.data.records.filter((i)=>(i.row_name == "D")))
-    return () => {
-        // alert('mounted')
-    }
-  })
+  const {seatData,error} = useSWR(`https://api.airtable.com/v0/${process.env.AIRTABLE_BASE}/chair?sort%5B0%5D%5Bfield%5D=id&sort%5B0%5D%5Bdirection%5D=desc`, (url) =>fetcher(url));
 
   const onSubmit = data => {
-    console.log('onSubmit', data);
+    // console.log('onSubmit', data);
     bookingSeat(data);
   }
-  
-  const router = useRouter();
 
-  const fetchSeats = useSWR(
-    `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE}/chair`,
-    (url) =>
-      fetcher(url, {
-        headers: {
-          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-          Accept: "application/json",
-        },
-      }).finally((response)=>{
-        console.log(response)
-        setLoading(false)
-      })
-  );
-  
   const bookingSeat = async (data) => {
-    const value = 
-      [
+    const reservationValue = {
+      "records": [
         {
-          "fields":{
+          // id: d.id,
+          "fields": {
             "name": data.name,
             "email": data.email,
             "reservation_date": moment().format("MM/DD/YYYY"),
             "reservation_code": selectedSeat + moment().format("ADDMMYYh"),
             "chair_number": selectedSeat
-          }
-        }
-      ]
-    ;
-    await fetcher(`https://api.airtable.com/v0/${process.env.AIRTABLE_BASE}/reservation`, {
-      method: "PATCH",
-      body: JSON.stringify(value),
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-        Accept: "application/json",
-      },
-    })
-    // .then((response) => response.text())
-    .then(result => console.log(result))
-    .catch((error) => console.log("error", error));;
+          },
+        },
+      ],
+    };
+    await axios.post(`https://api.airtable.com/v0/${process.env.AIRTABLE_BASE}/reservation`, {
+      params:{
+        headers: {
+          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(reservationValue),
+      }
+    });
   };
-  // console.log("CreateData",CreateData)
-  console.log('AIRTABLE_BASE:',process.env.AIRTABLE_BASE)
-  console.log('AIRTABLE_API_KEY:',process.env.AIRTABLE_API_KEY)
-  // console.log('fetchSeats:',fetchSeats)
-  // console.log('modelData',modelData)
-  // console.log("bookingSeat",bookingSeat)
+
+  if (error) {
+    return (
+      <div className="position-relative">
+        <div className="mt-5 position-absolute top-50 start-50 translate-middle">
+          <b class="alert alert-danger" role="alert">😒 Application Error</b>
+        </div>
+      </div>
+    )
+  }
   if(loading == true){
     return (
       <div className="h-100">
@@ -188,404 +175,234 @@ export default function Home() {
             {/* Baris D */}
             <div className="row mt-3 mx-md-5">
               <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100'>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('D10')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairGreen}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('D9')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairGreen}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('D8')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairGreen}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('D7')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairGreen}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('D6')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairGreen}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
+                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
+                  {rowD.filter((f)=>(f.fields.chair_number > 5 && f.fields.chair_number <= 10)).map((item,index)=>(
+                      <div key={item.fields.id}>
+                        {item.fields.Status == 'unavailabel'?(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairGreen}
+                            alt={item.fields.Status}
+                          />
+                        </a>
+                        ):(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairOutline}
+                            alt={item.fields.Status}
+                          />
+                        </a>
+                        )
+                      }
+                      </div>
+                  ))}
                 </div>
               </div>
               <div className="col-12">
-                <div className="d-flex w-100 justify-content-center" style={{height:"35px",backgroundColor:"#E9D6C1"}}>
+                <div className="rounded d-flex w-100 justify-content-center" style={{height:"35px",backgroundColor:"#E9D6C1"}}>
                   <b className="text-center w-100">Baris D</b>
                 </div>
               </div>
               <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100'>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('D5')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairGreen}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('D4')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairGreen}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('D3')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairGreen}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('D2')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('D1')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
+                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
+                {rowD.filter((f)=>(f.fields.chair_number >= 1 && f.fields.chair_number < 6)).map((item,index)=>(
+                    <div key={item.fields.id}>
+                      {item.fields.Status == 'unavailabel'?(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tooltip on top">
+                            <Image
+                              src={chairGreen}
+                              alt={item.fields.Status}
+                              className='rotate-180'
+                            />
+                          </div>
+                        </a>
+                      ):(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairOutline}
+                            alt={item.fields.Status}
+                            className='rotate-180'
+                          />
+                        </a>
+                      )
+                      }
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
             {/* Baris C */}
             <div className="row mt-3 mx-md-5">
               <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100'>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('C10')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('C9')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#"  onClick={()=>{setSelectedSeat('C8')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('C7')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('C6')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
+                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
+                  {rowC.filter((f)=>(f.fields.chair_number > 5 && f.fields.chair_number <= 10)).map((item,index)=>(
+                      <div key={item.fields.id}>
+                        {item.fields.Status == 'unavailabel'?(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairGreen}
+                            alt={item.fields.Status}
+                          />
+                        </a>
+                        ):(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairOutline}
+                            alt={item.fields.Status}
+                          />
+                        </a>
+                        )
+                      }
+                      </div>
+                  ))}
                 </div>
               </div>
               <div className="col-12">
-                <div className="d-flex w-100 justify-content-center" style={{height:"35px",backgroundColor:"#E9D6C1"}}>
+                <div className="rounded d-flex w-100 justify-content-center" style={{height:"35px",backgroundColor:"#E9D6C1"}}>
                   <b className="text-center w-100">Baris C</b>
                 </div>
               </div>
               <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100'>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('C5')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('C4')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('C3')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('C2')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('C1')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
+                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
+                {rowC.filter((f)=>(f.fields.chair_number >= 1 && f.fields.chair_number < 6)).map((item,index)=>(
+                    <div key={item.fields.id}>
+                      {item.fields.Status == 'unavailabel'?(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairGreen}
+                            alt={item.fields.Status}
+                            className='rotate-180'
+                          />
+                        </a>
+                      ):(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairOutline}
+                            alt={item.fields.Status}
+                            className='rotate-180'
+                          />
+                        </a>
+                      )
+                      }
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
             {/* Baris B */}
             <div className="row mt-3 mx-md-5">
               <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100'>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('B10')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('B9')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('B8')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('B7')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('B6')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
+                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
+                  {rowB.filter((f)=>(f.fields.chair_number > 5 && f.fields.chair_number <= 10)).map((item,index)=>(
+                      <div key={item.fields.id}>
+                        {item.fields.Status == 'unavailabel'?(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairGreen}
+                            alt={item.fields.Status}
+                          />
+                        </a>
+                        ):(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairOutline}
+                            alt={item.fields.Status}
+                          />
+                        </a>
+                        )
+                      }
+                      </div>
+                  ))}
                 </div>
               </div>
               <div className="col-12">
-                <div className="d-flex w-100 justify-content-center" style={{height:"35px",backgroundColor:"#E9D6C1"}}>
+                <div className="rounded d-flex w-100 justify-content-center" style={{height:"35px",backgroundColor:"#E9D6C1"}}>
                   <b className="text-center w-100">Baris B</b>
                 </div>
               </div>
               <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100'>
-                  <div>
-                  <a href="#" onClick={()=>{setSelectedSeat('B5')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('B4')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('B3')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('B2')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('B1')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
+                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
+                {rowB.filter((f)=>(f.fields.chair_number >= 1 && f.fields.chair_number < 6)).map((item,index)=>(
+                    <div key={item.fields.id}>
+                      {item.fields.Status == 'unavailabel'?(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairGreen}
+                            alt={item.fields.Status}
+                            className='rotate-180'
+                          />
+                        </a>
+                      ):(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairOutline}
+                            alt={item.fields.Status}
+                            className='rotate-180'
+                          />
+                        </a>
+                      )
+                      }
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
             {/* Baris A */}
             <div className="row mt-3 mx-md-5">
               <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100'>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('A10')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('A9')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('A8')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('A7')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('A6')}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                      />
-                    </a>
-                  </div>
+                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
+                  {rowA.filter((f)=>(f.fields.chair_number > 5 && f.fields.chair_number <= 10)).map((item,index)=>(
+                      <div key={item.fields.id}>
+                        {item.fields.Status == 'unavailabel'?(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairGreen}
+                            alt={item.fields.Status}
+                          />
+                        </a>
+                        ):(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairOutline}
+                            alt={item.fields.Status}
+                          />
+                        </a>
+                        )
+                      }
+                      </div>
+                  ))}
                 </div>
               </div>
               <div className="col-12">
-                <div className="d-flex w-100 justify-content-center" style={{height:"35px",backgroundColor:"#E9D6C1"}}>
+                <div className="rounded d-flex w-100 justify-content-center" style={{height:"35px",backgroundColor:"#E9D6C1"}}>
                   <b className="text-center w-100">Baris A</b>
                 </div>
               </div>
               <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100'>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('A5')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('A4')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('A3')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('A2')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#" onClick={()=>{setSelectedSeat('A1')}} data-bs-toggle="modal" databstarget="#exampleModal">
-                      <Image
-                        src={chairOutline}
-                        alt="tersedia"
-                        className='rotate-180'
-                      />
-                    </a>
-                  </div>
+                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
+                {rowA.filter((f)=>(f.fields.chair_number >= 1 && f.fields.chair_number < 6)).map((item,index)=>(
+                    <div key={item.fields.id}>
+                      {item.fields.Status == 'unavailabel'?(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairGreen}
+                            alt={item.fields.Status}
+                            className='rotate-180'
+                          />
+                        </a>
+                        ):(
+                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                          <Image
+                            src={chairOutline}
+                            alt={item.fields.Status}
+                            className='rotate-180'
+                          />
+                        </a>
+                        )
+                      }
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -642,11 +459,11 @@ export default function Home() {
                       </div>
                       <div className="mb-3">
                         <label htmlFor="exampleInputName1" className="form-label">No. Kursi</label>
-                        <input disabled type="text" value={selectedSeat} className="form-control" id="exampleInputName1"/>
+                        <input disabled type="text" defaultValue={selectedSeat || ''} className="form-control" id="exampleInputName1"/>
                       </div>
                       <div className="mb-3">
                         <label htmlFor="exampleInputName1" className="form-label">Tanggal booking</label>
-                        <input disabled type="text" value={moment().format("MM/DD/YYYY")} className="form-control" id="exampleInputName1"/>
+                        <input disabled type="text" defaultValue={moment().format("MM/DD/YYYY") || ''} className="form-control" id="exampleInputName1"/>
                       </div>
                     </div>
                   </div>
@@ -670,23 +487,23 @@ export default function Home() {
                     <div>
                       <div className="mb-3">
                         <label htmlFor="exampleInputName1" className="form-label">No.Tiket</label>
-                        <input value={selectedSeat + moment().format("ADDMMYYh")} type="text" className="form-control" id="exampleInputName1"/>
+                        <input defaultValue={selectedSeat + moment().format("ADDMMYYh") || ''} type="text" className="form-control" id="exampleInputName1"/>
                       </div>
                       <div className="mb-3">
                         <label htmlFor="exampleInputName1" className="form-label">Nama</label>
-                        <input disabled value="Muhammad Amien" type="text" className="form-control" id="exampleInputName1"/>
+                        <input disabled defaultValue="Muhammad Amien" type="text" className="form-control" id="exampleInputName1"/>
                       </div>
                       <div className="mb-3">
                         <label htmlFor="exampleInputName1" className="form-label">Email</label>
-                        <input disabled value="muhammadamien23@gmail.com" aria-invalid={errors.email ? "true" : "false"} type="text" className="form-control" id="exampleInputName1"/>
+                        <input disabled defaultValue="muhammadamien23@gmail.com" aria-invalid={errors.email ? "true" : "false"} type="text" className="form-control" id="exampleInputName1"/>
                       </div>
                       <div className="mb-3">
                         <label htmlFor="exampleInputName1" className="form-label">No. Kursi</label>
-                        <input disabled type="text" value={selectedSeat} className="form-control" id="exampleInputName1"/>
+                        <input disabled type="text" defaultValue={selectedSeat} className="form-control" id="exampleInputName1"/>
                       </div>
                       <div className="mb-3">
                         <label htmlFor="exampleInputName1" className="form-label">Tanggal booking</label>
-                        <input disabled type="text" value={moment().format("MM/DD/YYYY")} className="form-control" id="exampleInputName1"/>
+                        <input disabled type="text" defaultValue={moment().format("MM/DD/YYYY") || ''} className="form-control" id="exampleInputName1"/>
                       </div>
                     </div>
                   </div>
