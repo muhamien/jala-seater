@@ -4,27 +4,37 @@ import { set, useForm } from "react-hook-form";
 import useSWR from "swr";
 import Head from 'next/head'
 import Image from 'next/image'
-// import styles from '../styles/Home.module.css'
 import mainIllustration from '../public/assets/images/main-illustration.svg'
 import bookRoomIllustration from '../public/assets/images/book-room-illustration.svg'
-import chairOutline from '../public/assets/images/chair-outline.svg'
-import chairBlue from '../public/assets/images/chair-blue.svg'
-import chairGreen from '../public/assets/images/chair-green.svg'
 import jalaSeater from '../public/assets/images/jala-seater.svg'
 import moment from "moment/moment";
 import Script from 'next/script';
+import CreateReservationModal from "../components/modals/CreateReservationModal";
+import LeaveModal from "../components/modals/LeaveModal";
+import SeatMap from "../components/SeatMap";
 import axios from "axios";
+import MyReservedDetailModal from "../components/modals/myReservedDetailModal";
 
 export default function Home() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const [loading, setLoading] = useState(true);
   const [selectedSeat, setSelectedSeat] = useState("");
+  const [generateTicket, setGenerateTicket] = useState(selectedSeat + moment().format("ADDMMYYh"));
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState();
   const [rowA, setRowA] = useState({});
   const [rowB, setRowB] = useState({});
   const [rowC, setRowC] = useState({});
   const [rowD, setRowD] = useState({});
   const [bookModel, setBookModel] = useState({});
+  const [reservationShow, setReservationShow] = useState({});
+  
+  const checkingReservation = () => {
+    const getItem = localStorage.getItem('seatReservation');
+    if (getItem){
+      return true;
+    } else {
+      return false;
+    }
+  }
   
   const fetcher = async (url) => await axios.get(url, {
     headers: {
@@ -42,43 +52,11 @@ export default function Home() {
 
   const {seatData,error} = useSWR(`https://api.airtable.com/v0/${process.env.AIRTABLE_BASE}/chair?sort%5B0%5D%5Bfield%5D=id&sort%5B0%5D%5Bdirection%5D=desc`, (url) =>fetcher(url));
 
-  const onSubmit = data => {
-    // console.log('onSubmit', data);
-    bookingSeat(data);
-  }
-
-  const bookingSeat = async (data) => {
-    const reservationValue = {
-      "records": [
-        {
-          // id: d.id,
-          "fields": {
-            "name": data.name,
-            "email": data.email,
-            "reservation_date": moment().format("MM/DD/YYYY"),
-            "reservation_code": selectedSeat + moment().format("ADDMMYYh"),
-            "chair_number": selectedSeat
-          },
-        },
-      ],
-    };
-    await axios.post(`https://api.airtable.com/v0/${process.env.AIRTABLE_BASE}/reservation`, {
-      params:{
-        headers: {
-          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(reservationValue),
-      }
-    });
-  };
-
   if (error) {
     return (
       <div className="position-relative">
         <div className="mt-5 position-absolute top-50 start-50 translate-middle">
-          <b class="alert alert-danger" role="alert">😒 Application Error</b>
+          <b className="alert alert-danger" role="alert">😒 We'll be back</b>
         </div>
       </div>
     )
@@ -170,350 +148,30 @@ export default function Home() {
               </div>
             </div>
           </div>
-          {/* kursi */}
-          <div className="container">
-            {/* Baris D */}
-            <div className="row mt-3 mx-md-5">
-              <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
-                  {rowD.filter((f)=>(f.fields.chair_number > 5 && f.fields.chair_number <= 10)).map((item,index)=>(
-                      <div key={item.fields.id}>
-                        {item.fields.Status == 'unavailabel'?(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairGreen}
-                            alt={item.fields.Status}
-                          />
-                        </a>
-                        ):(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairOutline}
-                            alt={item.fields.Status}
-                          />
-                        </a>
-                        )
-                      }
-                      </div>
-                  ))}
-                </div>
-              </div>
-              <div className="col-12">
-                <div className="rounded d-flex w-100 justify-content-center" style={{height:"35px",backgroundColor:"#E9D6C1"}}>
-                  <b className="text-center w-100">Baris D</b>
-                </div>
-              </div>
-              <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
-                {rowD.filter((f)=>(f.fields.chair_number >= 1 && f.fields.chair_number < 6)).map((item,index)=>(
-                    <div key={item.fields.id}>
-                      {item.fields.Status == 'unavailabel'?(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tooltip on top">
-                            <Image
-                              src={chairGreen}
-                              alt={item.fields.Status}
-                              className='rotate-180'
-                            />
-                          </div>
-                        </a>
-                      ):(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairOutline}
-                            alt={item.fields.Status}
-                            className='rotate-180'
-                          />
-                        </a>
-                      )
-                      }
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            {/* Baris C */}
-            <div className="row mt-3 mx-md-5">
-              <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
-                  {rowC.filter((f)=>(f.fields.chair_number > 5 && f.fields.chair_number <= 10)).map((item,index)=>(
-                      <div key={item.fields.id}>
-                        {item.fields.Status == 'unavailabel'?(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairGreen}
-                            alt={item.fields.Status}
-                          />
-                        </a>
-                        ):(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairOutline}
-                            alt={item.fields.Status}
-                          />
-                        </a>
-                        )
-                      }
-                      </div>
-                  ))}
-                </div>
-              </div>
-              <div className="col-12">
-                <div className="rounded d-flex w-100 justify-content-center" style={{height:"35px",backgroundColor:"#E9D6C1"}}>
-                  <b className="text-center w-100">Baris C</b>
-                </div>
-              </div>
-              <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
-                {rowC.filter((f)=>(f.fields.chair_number >= 1 && f.fields.chair_number < 6)).map((item,index)=>(
-                    <div key={item.fields.id}>
-                      {item.fields.Status == 'unavailabel'?(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairGreen}
-                            alt={item.fields.Status}
-                            className='rotate-180'
-                          />
-                        </a>
-                      ):(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairOutline}
-                            alt={item.fields.Status}
-                            className='rotate-180'
-                          />
-                        </a>
-                      )
-                      }
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            {/* Baris B */}
-            <div className="row mt-3 mx-md-5">
-              <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
-                  {rowB.filter((f)=>(f.fields.chair_number > 5 && f.fields.chair_number <= 10)).map((item,index)=>(
-                      <div key={item.fields.id}>
-                        {item.fields.Status == 'unavailabel'?(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairGreen}
-                            alt={item.fields.Status}
-                          />
-                        </a>
-                        ):(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairOutline}
-                            alt={item.fields.Status}
-                          />
-                        </a>
-                        )
-                      }
-                      </div>
-                  ))}
-                </div>
-              </div>
-              <div className="col-12">
-                <div className="rounded d-flex w-100 justify-content-center" style={{height:"35px",backgroundColor:"#E9D6C1"}}>
-                  <b className="text-center w-100">Baris B</b>
-                </div>
-              </div>
-              <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
-                {rowB.filter((f)=>(f.fields.chair_number >= 1 && f.fields.chair_number < 6)).map((item,index)=>(
-                    <div key={item.fields.id}>
-                      {item.fields.Status == 'unavailabel'?(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairGreen}
-                            alt={item.fields.Status}
-                            className='rotate-180'
-                          />
-                        </a>
-                      ):(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairOutline}
-                            alt={item.fields.Status}
-                            className='rotate-180'
-                          />
-                        </a>
-                      )
-                      }
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            {/* Baris A */}
-            <div className="row mt-3 mx-md-5">
-              <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
-                  {rowA.filter((f)=>(f.fields.chair_number > 5 && f.fields.chair_number <= 10)).map((item,index)=>(
-                      <div key={item.fields.id}>
-                        {item.fields.Status == 'unavailabel'?(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairGreen}
-                            alt={item.fields.Status}
-                          />
-                        </a>
-                        ):(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairOutline}
-                            alt={item.fields.Status}
-                          />
-                        </a>
-                        )
-                      }
-                      </div>
-                  ))}
-                </div>
-              </div>
-              <div className="col-12">
-                <div className="rounded d-flex w-100 justify-content-center" style={{height:"35px",backgroundColor:"#E9D6C1"}}>
-                  <b className="text-center w-100">Baris A</b>
-                </div>
-              </div>
-              <div className="col-12">
-                <div className='d-flex justify-content-between gap-3 w-100 px-2'>
-                {rowA.filter((f)=>(f.fields.chair_number >= 1 && f.fields.chair_number < 6)).map((item,index)=>(
-                    <div key={item.fields.id}>
-                      {item.fields.Status == 'unavailabel'?(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairGreen}
-                            alt={item.fields.Status}
-                            className='rotate-180'
-                          />
-                        </a>
-                        ):(
-                        <a href="#" onClick={()=>{setSelectedSeat(item.fields.id)}} data-bs-toggle="modal" data-bs-target="#exampleModal">
-                          <Image
-                            src={chairOutline}
-                            alt={item.fields.Status}
-                            className='rotate-180'
-                          />
-                        </a>
-                        )
-                      }
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-            
-          {/* note */}
-          <div className="row mt-4 mb-5">
-            <div className="col-12" style={{marginBottom:"72px"}}>
-              <div className='d-flex justify-content-center gap-4'>
-                <div>
-                  <Image
-                    src={chairOutline}
-                    alt="tersedia"
-                  />
-                  <span>Tersedia</span>
-                </div>
-                {/* <div>
-                  <Image
-                    src={chairBlue}
-                    alt="dipilih"
-                  />
-                  <span>Dipilih</span>
-                </div> */}
-                <div>
-                  <Image
-                    src={chairGreen}
-                    alt="terbooking"
-                  />
-                  <span>Terbooking</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* modal */}
-          <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title" id="exampleModalLabel">Pilih Kursi</h5>
-                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div className="modal-body">
-                    <div>
-                      <div className="mb-3">
-                        <label htmlFor="exampleInputName1" className="form-label">Nama</label>
-                        <input {...register("name",{ required: true })} aria-invalid={errors.name ? "true" : "false"} type="text" className="form-control" id="exampleInputName1"/>
-                        {errors.name && <div className="invalid-feedback" role="alert">{errors.name?.message}</div>}
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="exampleInputName1" className="form-label">Email</label>
-                        <input {...register("email",{ required: true })} aria-invalid={errors.email ? "true" : "false"} type="text" className="form-control" id="exampleInputName1"/>
-                        {errors.email && <div className="invalid-feedback" role="alert">{errors.email?.message}</div>}
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="exampleInputName1" className="form-label">No. Kursi</label>
-                        <input disabled type="text" defaultValue={selectedSeat || ''} className="form-control" id="exampleInputName1"/>
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="exampleInputName1" className="form-label">Tanggal booking</label>
-                        <input disabled type="text" defaultValue={moment().format("MM/DD/YYYY") || ''} className="form-control" id="exampleInputName1"/>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" className="btn btn-primary">Booking</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-          {/* modal leave */}
-          <div className="modal fade" id="leaveModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title" id="exampleModalLabel">Tinggalkan kursi</h5>
-                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                  <div className="modal-body">
-                    <div>
-                      <div className="mb-3">
-                        <label htmlFor="exampleInputName1" className="form-label">No.Tiket</label>
-                        <input defaultValue={selectedSeat + moment().format("ADDMMYYh") || ''} type="text" className="form-control" id="exampleInputName1"/>
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="exampleInputName1" className="form-label">Nama</label>
-                        <input disabled defaultValue="Muhammad Amien" type="text" className="form-control" id="exampleInputName1"/>
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="exampleInputName1" className="form-label">Email</label>
-                        <input disabled defaultValue="muhammadamien23@gmail.com" aria-invalid={errors.email ? "true" : "false"} type="text" className="form-control" id="exampleInputName1"/>
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="exampleInputName1" className="form-label">No. Kursi</label>
-                        <input disabled type="text" defaultValue={selectedSeat} className="form-control" id="exampleInputName1"/>
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="exampleInputName1" className="form-label">Tanggal booking</label>
-                        <input disabled type="text" defaultValue={moment().format("MM/DD/YYYY") || ''} className="form-control" id="exampleInputName1"/>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" className="btn btn-danger">Leave</button>
-                  </div>
-              </div>
-            </div>
-          </div>
+          <SeatMap
+            rowA={rowA}
+            rowB={rowB}
+            rowC={rowC}
+            rowD={rowD}
+            seat={val => setSelectedSeat(val)}
+            reservationShow={val => setReservationShow(val)}
+          />
+          <CreateReservationModal
+              seats={data}
+              seatNumber={selectedSeat}
+              generateTicket={generateTicket}
+              reservationShow={val => setReservationShow(val)}
+            />
+          {/* {checkingReservation == false ? (
+            <CreateReservationModal
+              seats={data}
+              seatNumber={selectedSeat}
+              generateTicket={generateTicket}
+            />
+          ) : (
+            <MyReservedDetailModal/>
+          )} */}
+          <LeaveModal/>
           <nav className="navbar bg-primary fixed-bottom">
             <div className="d-flex justify-content-center w-100">
               <b className="text-white">😆Ini Tembok Depan Guys..</b>
