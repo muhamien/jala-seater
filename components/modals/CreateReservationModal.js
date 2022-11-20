@@ -57,12 +57,12 @@ export default function CreateReservationModal(props) {
             if(err) {
                 console.error(err);
                 toast.error(err);
-                setLoading(false)
+                setLoading(false);
                 return;
             }
             localStorage.setItem("seatReservation", JSON.stringify(record));
-            updateSeat();
-            resetForm();
+            // updateSeat();
+            // resetForm();
             setLoading(false);
             props.reservationShow(false)
             toast.success('Successfully Reserved!');
@@ -70,50 +70,50 @@ export default function CreateReservationModal(props) {
     }
     return (
         <>
-        <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div className="modal-dialog modal-dialog-centered">
-                {!loading ? (
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="exampleModalLabel">Select your seat</h5>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered">
+                    {!loading ? (
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title" id="exampleModalLabel">Select your seat</h5>
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form onSubmit={handleSubmit(onSubmit)}>
+                                    <div className="modal-body">
+                                    <div>
+                                        <div className="mb-3">
+                                        <label htmlFor="exampleInputName1" className="form-label">Name</label>
+                                        <input {...register("name",{ required: true })} aria-invalid={errors.name ? "true" : "false"} type="text" className="form-control" id="exampleInputName1"/>
+                                        {errors.name && <div className="invalid-feedback" role="alert">{errors.name.message}</div>}
+                                        </div>
+                                        <div className="mb-3">
+                                        <label htmlFor="exampleInputName1" className="form-label">Email</label>
+                                        <input {...register("email",{ required: true })} aria-invalid={errors.email ? "true" : "false"} type="text" className="form-control" id="exampleInputName1"/>
+                                        {errors.email && <div className="invalid-feedback" role="alert">{errors.email.message}</div>}
+                                        </div>
+                                        <div className="mb-3">
+                                        <label htmlFor="exampleInputName1" className="form-label">No. Kursi</label>
+                                        <input disabled type="text" defaultValue={props.seatNumber || ''} className="form-control" id="exampleInputName1"/>
+                                        </div>
+                                        <div className="mb-3">
+                                        <label htmlFor="exampleInputName1" className="form-label">Tanggal booking</label>
+                                        <input disabled type="text" defaultValue={moment().format("MM/DD/YYYY") || ''} className="form-control" id="exampleInputName1"/>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" className="btn btn-primary">Book</button>
+                                    </div>
+                                </form>
                             </div>
-                            <form onSubmit={handleSubmit(onSubmit)}>
-                                <div className="modal-body">
-                                <div>
-                                    <div className="mb-3">
-                                    <label htmlFor="exampleInputName1" className="form-label">Name</label>
-                                    <input {...register("name",{ required: true })} aria-invalid={errors.name ? "true" : "false"} type="text" className="form-control" id="exampleInputName1"/>
-                                    {errors.name && <div className="invalid-feedback" role="alert">{errors.name.message}</div>}
-                                    </div>
-                                    <div className="mb-3">
-                                    <label htmlFor="exampleInputName1" className="form-label">Email</label>
-                                    <input {...register("email",{ required: true })} aria-invalid={errors.email ? "true" : "false"} type="text" className="form-control" id="exampleInputName1"/>
-                                    {errors.email && <div className="invalid-feedback" role="alert">{errors.email.message}</div>}
-                                    </div>
-                                    <div className="mb-3">
-                                    <label htmlFor="exampleInputName1" className="form-label">No. Kursi</label>
-                                    <input disabled type="text" defaultValue={props.seatNumber || ''} className="form-control" id="exampleInputName1"/>
-                                    </div>
-                                    <div className="mb-3">
-                                    <label htmlFor="exampleInputName1" className="form-label">Tanggal booking</label>
-                                    <input disabled type="text" defaultValue={moment().format("MM/DD/YYYY") || ''} className="form-control" id="exampleInputName1"/>
-                                    </div>
-                                </div>
-                                </div>
-                                <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" className="btn btn-primary">Book</button>
-                                </div>
-                            </form>
-                        </div>
-                    ) : (
-                        <div className="modal-content">Loading...</div>
-                    )
-                }
+                        ) : (
+                            <div className="modal-content">Loading...</div>
+                        )
+                    }
+                </div>
+                <Toaster />
             </div>
-            <Toaster />
-        </div>
         </>
     )
 }

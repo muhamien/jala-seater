@@ -13,7 +13,7 @@ import CreateReservationModal from "../components/modals/CreateReservationModal"
 import LeaveModal from "../components/modals/LeaveModal";
 import SeatMap from "../components/SeatMap";
 import axios from "axios";
-import MyReservedDetailModal from "../components/modals/myReservedDetailModal";
+import MyReservedDetailModal from "../components/modals/MyReservedDetailModal";
 
 export default function Home() {
   const [selectedSeat, setSelectedSeat] = useState("");
@@ -156,21 +156,16 @@ export default function Home() {
             seat={val => setSelectedSeat(val)}
             reservationShow={val => setReservationShow(val)}
           />
-          <CreateReservationModal
+          {checkingReservation == false ? (
+            <CreateReservationModal
               seats={data}
               seatNumber={selectedSeat}
               generateTicket={generateTicket}
               reservationShow={val => setReservationShow(val)}
             />
-          {/* {checkingReservation == false ? (
-            <CreateReservationModal
-              seats={data}
-              seatNumber={selectedSeat}
-              generateTicket={generateTicket}
-            />
           ) : (
             <MyReservedDetailModal/>
-          )} */}
+          )}
           <LeaveModal/>
           <nav className="navbar bg-primary fixed-bottom">
             <div className="d-flex justify-content-center w-100">
