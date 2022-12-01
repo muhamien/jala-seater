@@ -28,14 +28,13 @@ export default function Home() {
   const [reservationShow, setReservationShow] = useState({});
   
   const checkingReservation = () => {
-    const getItem = localStorage.getItem('seatReservation');
-    if (getItem){
-      return true;
-    } else {
+    if (localStorage.getItem('seatReservation') && localStorage.getItem('seatReservation') === {}){
       return false;
+    } else {
+      return true;
     }
   }
-  
+  // console.log('checkingReservation',checkingReservation())
   const fetcher = async (url) => await axios.get(url, {
     headers: {
       Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
@@ -156,7 +155,7 @@ export default function Home() {
             seat={val => setSelectedSeat(val)}
             reservationShow={val => setReservationShow(val)}
           />
-          {checkingReservation == false ? (
+          {checkingReservation() == true ? (
             <CreateReservationModal
               seats={data}
               seatNumber={selectedSeat}
