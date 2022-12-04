@@ -1,6 +1,17 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+import BookModal from "./modals/BookModal";
 
 export default function DeskMap() {
+    let [isOpen, setIsOpen] = useState(true)
+
+    function closeModal() {
+        setIsOpen(false)
+    }
+
+    function openModal() {
+        setIsOpen(true)
+    }
     return(
         <>
             <div class="flex flex-col my-8 gap-6">
@@ -14,7 +25,7 @@ export default function DeskMap() {
                                     </div>
                                 </div>
                             </div>
-                            <div class="border border-gray-400 w-8 h-8 rounded-lg grid grid-cols-1 place-content-center">
+                            <div onClick={openModal} class="border border-gray-400 w-8 h-8 rounded-lg grid grid-cols-1 place-content-center">
                                 <div class="flex flex-col justify-center">
                                     <div class="mx-auto">
                                         <XMarkIcon class="h-3 w-3 text-gray-400"/>
@@ -385,6 +396,9 @@ export default function DeskMap() {
                     </div>
                 </div>
             </div>
+            <BookModal
+                isOpen={isOpen}
+            />
         </>
     )
 }

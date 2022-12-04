@@ -1,14 +1,24 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { set, useForm } from "react-hook-form";
-import useSWR from "swr";
-import moment from "moment/moment";
-import axios from "axios";
+import { useSession, signIn, signOut } from "next-auth/react";
 import MenuSection from "../components/sections/MenuSection";
 import DeskMap from "../components/sections/DeskMap";
 import Layout from "../components/Layout";
+import { useRouter } from 'next/router'
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const router = useRouter()
+  const loading = status === "loading";
+
+  if (loading) return (
+    <>
+    
+    </>
+  );
+
+  if (!session) {
+    router.push('/signin')
+    return;
+  }
   return(
     <>
       <Layout>
