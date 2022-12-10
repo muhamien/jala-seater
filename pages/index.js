@@ -16,7 +16,7 @@ export default function Home() {
   );
 
   if (!session) {
-    router.push('/signin')
+    router.push('/api/auth/signin')
     return;
   }
   return(

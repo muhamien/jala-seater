@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import { compare, hash } from "bcrypt";
 import { gql, GraphQLClient } from "graphql-request";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 
 const client = new GraphQLClient(process.env.HYGRAPH_ENDPOINT, {
     headers: {
@@ -27,54 +28,45 @@ const CreateNextUserByEmail = gql`
 `;
 
 export default NextAuth({
+    session: {
+        strategy: "jwt",
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+        updateAge: 24 * 60 * 60, // 24 hours
+        generateSessionToken: () => {
+          return randomUUID?.() ?? randomBytes(32).toString("hex")
+        }
+    },
     providers: [
-        CredentialsProvider({
-            name: "Email and Password",
-            credentials: {
-                email: {
-                    label: "Email",
-                    type: "email",
-                    placeholder: "jamie@hygraph.com"
-                },
-                password: {
-                    label: "Password",
-                    type: "password",
-                    placeholder: "Password"
-                },
-            },
-            authorize: async ({ email, password }) => {
-                const { user } = await client.request(GetUserByEmail, {
-                    email,
-                });
-
-                if (!user) {
-                    const { newUser } = await client.request(
-                        CreateNextUserByEmail,
-                        {
-                            email,
-                            password: await hash(password, 12),
-                        }
-                    );
-
-                    return {
-                        id: newUser.id,
-                        username: email,
-                        email,
-                    };
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            authorization: {
+                params: {
+                  prompt: "consent",
+                  access_type: "offline",
+                  response_type: "code"
                 }
-
-                const isValid = await compare(password, user.password);
-
-                if (!isValid) {
-                    throw new Error("Wrong credentials. Try again.");
-                }
-
-                return {
-                    id: user.id,
-                    username: email,
-                    email,
-                };
-            },
+            }
         }),
-    ]
+    ],
+    pages: {
+        signIn: '/auth/signin',
+        signOut: '/auth/signout',
+        error: '/auth/error', // Error code passed in query string as ?error=
+    },
+    callbacks: {
+        async signIn({ user, account, profile, email, credentials }) {
+          return true
+        },
+        async redirect({ url, baseUrl }) {
+          return baseUrl
+        },
+        async session({ session, user, token }) {
+
+          return session
+        },
+        async jwt({ token, user, account, profile, isNewUser }) {
+          return token
+        }
+    }
 })
