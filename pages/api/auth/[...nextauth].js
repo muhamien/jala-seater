@@ -36,6 +36,7 @@ export default NextAuth({
           return randomUUID?.() ?? randomBytes(32).toString("hex")
         }
     },
+    secret: process.env.NEXTAUTH_SECRET,
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID,
@@ -51,7 +52,6 @@ export default NextAuth({
     ],
     pages: {
         signIn: '/auth/signin',
-        error: '/auth/error', // Error code passed in query string as ?error=
     },
     callbacks: {
         async signIn({ user, account, profile, email, credentials }) {
