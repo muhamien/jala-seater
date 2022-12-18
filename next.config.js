@@ -7,6 +7,10 @@ const withPWA = require('next-pwa')({
   skipWaiting: false
 });
 
-module.exports = withPWA({
+// module.exports = withPWA({
+//   reactStrictMode: true,
+// });
+module.exports = {
   reactStrictMode: true,
-});
+  disableExperimentalFeaturesWarning: true,
+};

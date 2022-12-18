@@ -1,10 +1,13 @@
 import { ArrowRightOnRectangleIcon, BuildingOfficeIcon, CalendarDaysIcon, SpeakerWaveIcon } from '@heroicons/react/24/outline'
 import { signOut, useSession } from "next-auth/react"
+import { useRouter } from 'next/router'
 
 export default function MenuSection() {
     const { data: session, status } = useSession()
-    console.log(session.user)
-    return(
+
+    const router = useRouter();
+
+    return (
         <>
             <div className="flex flex-col gap-4 sm:flex-row">
                 <div className="flex-auto sm:flex-1">
@@ -18,10 +21,10 @@ export default function MenuSection() {
                 <div className="flex-auto sm:flex-1">
                     <div className="lg:grid lg:grid-cols-6 gap-2 flex justify-between">
                         <div className="bg-blue-200 hover:bg-blue-300 ease-out duration-300 hover:text-gray-600 w-16 h-16 rounded-lg grid grid-cols-1 place-content-center">
-                            <a href="#" className="h-full">
+                            <a href="#" onClick={()=>router.push('/room')} className="h-full">
                                 <div className="flex flex-col justify-center">
                                     <div className="mx-auto">
-                                        <BuildingOfficeIcon className="h-6 w-6 text-gray-600"/>
+                                        <BuildingOfficeIcon className="h-6 w-6 text-gray-600" />
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600 text-center">Rooms</p>
@@ -30,10 +33,10 @@ export default function MenuSection() {
                             </a>
                         </div>
                         <div className="bg-blue-200 hover:bg-blue-300 ease-out duration-300 hover:text-gray-600 w-16 h-16 rounded-lg grid grid-cols-1 place-content-center">
-                            <a href="#" className="h-full">
+                            <a href="#" onClick={()=>router.push('/info')} className="h-full">
                                 <div className="flex flex-col justify-center">
                                     <div className="mx-auto">
-                                        <SpeakerWaveIcon className="h-6 w-6 text-gray-600"/>
+                                        <SpeakerWaveIcon className="h-6 w-6 text-gray-600" />
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600 text-center">Info</p>
@@ -42,10 +45,10 @@ export default function MenuSection() {
                             </a>
                         </div>
                         <div className="bg-blue-200 hover:bg-blue-300 ease-out duration-300 hover:text-gray-600 w-16 h-16 rounded-lg grid grid-cols-1 place-content-center">
-                            <a href="#" className="h-full">
+                            <a href="#" onClick={()=>router.push('/calendar')} className="h-full">
                                 <div className="flex flex-col justify-center">
                                     <div className="mx-auto">
-                                        <CalendarDaysIcon className="h-6 w-6 text-gray-600"/>
+                                        <CalendarDaysIcon className="h-6 w-6 text-gray-600" />
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600 text-center">Calendar</p>
@@ -57,7 +60,7 @@ export default function MenuSection() {
                             <a href="#" className="h-full" onClick={() => signOut()}>
                                 <div className="flex flex-col justify-center">
                                     <div className="mx-auto">
-                                        <ArrowRightOnRectangleIcon className="h-6 w-6 text-gray-600"/>
+                                        <ArrowRightOnRectangleIcon className="h-6 w-6 text-gray-600" />
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600 text-center">Sign Out</p>
