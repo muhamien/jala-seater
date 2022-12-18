@@ -1,6 +1,7 @@
 import { Player } from "@lottiefiles/react-lottie-player";
 import LottieComingSoon from "../assets/lottiefile/coming-soon.json"
 import Layout from "../components/Layout";
+import Link from "next/link";
 
 export default function Calendar() {
     return (
@@ -19,7 +20,7 @@ export default function Calendar() {
                         <p className="text-center text-gray-400">This page is under development, stay tune-up for this feature 😁👌</p>
                     </div>
                     <div className="flex justify-center">
-                        <a href="/" className="text-center text-sm rounded-md hover:bg-blue-900 bg-blue-800 py-2 px-8 w-max text-white">Back to Home</a>
+                        <Link href="/" className="text-center text-sm rounded-md hover:bg-blue-900 bg-blue-800 py-2 px-8 w-max text-white">Back to Home</Link>
                     </div>
                 </div>
             </div>
