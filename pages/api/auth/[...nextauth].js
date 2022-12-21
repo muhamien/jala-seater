@@ -1,27 +1,11 @@
-import { gql } from "graphql-request";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { HygraphAdapter } from '../../../adapters/hygraph';
-import { hygraphClient } from "../../../lib/hygraph";
+import axios from "axios";
 
-const GetUserByEmail = gql`
-query GetUserByEmail($email: String!) {
-  user: employee(where: { email: $email }) {
-    email
-  }
+const fetchAllEmployee = async () => {
+  const { data } = await axios.get(`${process.env.BASE_URL}/api/getAllEmployee`);
+  return data;
 }
-`;
-
-const CreateNextUserByEmail = gql`
-  mutation CreateNextUserByEmail($email: String!,$name: String!,$photo: String!) {
-    newUser: createEmployee(data: { email: $email, name: $name, role: Employee,photo: $photo }) {
-      email
-      name
-      role
-      photo
-    }
-  }
-`;
 
 export default NextAuth({
   session: {
@@ -51,34 +35,28 @@ export default NextAuth({
   },
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
-      return true;
+      const data = await fetchAllEmployee();
+      if (data.find((i) => i.fields.email == user.email)) {
+        return true;
+      } else {
+        const formData = {
+          name: user.name,
+          email: user.email,
+          photo: user.image,
+          status: "Active"
+        }
+        fetch(`${process.env.BASE_URL}/api/createEmployee`, {
+          method: "POST",
+          body: JSON.stringify(formData),
+          headers: { "Content-Type": "application/json" },
+        });
+        return true;
+      }
     },
     async redirect({ url, baseUrl }) {
       return baseUrl
     },
     async session({ session, user, token }) {
-      // console.log(session)
-      // const getUser = await hygraphClient.request(GetUserByEmail, {
-      //     email:session.email,
-      // });
-
-      //   if (!getUser) {
-      //     console.log('creating new user')
-      //     const newUser = await hygraphClient.request(
-      //         CreateNextUserByEmail,
-      //         {
-      //             email: session.email,
-      //             name: session.name,
-      //             photo: session.image,
-      //         }
-      //     );
-
-      //     return {
-      //         id: newUser.id,
-      //         email: newUser.email,
-      //         name: newUser.name,
-      //     };
-      // }
       session.accessToken = token.accessToken
       session.user.id = token.id
       return session

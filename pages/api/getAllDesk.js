@@ -1,6 +1,6 @@
 import { minifyResults, table } from "../../lib/airtable";
 
-export default async function getAllDesk (_req, res) {
+export default async function handler (_req, res) {
     try {
         const records = await table('desks').select({
             sort:[{field: "id", direction: "desc"}]
