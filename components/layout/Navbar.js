@@ -8,7 +8,7 @@ export default function Navbar(props) {
     const { data: session, status } = useSession();
     return (
         <>
-            <nav className="bg-white px-2 sm:px-4 py-2.5 dark:bg-gray-900 fixed w-full z-20 top-0 left-0 border-b border-gray-200 dark:border-gray-600">
+            <nav className="px-2 sm:px-4 py-2.5 bg-gray-900 fixed w-full z-20 top-0 left-0 border-b border-gray-600">
                 <div className="container flex flex-wrap items-center justify-between mx-auto">
                     <Link href="#" className="flex items-center">
                         <Image src="/icon.png" className="h-12 mr-3" alt="Flowbite Logo" width={48} height={48} />

@@ -13,4 +13,7 @@ const withPWA = require('next-pwa')({
 module.exports = {
   reactStrictMode: true,
   // disableExperimentalFeaturesWarning: true,
+  images: {
+    domains: ['lh3.googleusercontent.com'],
+  },
 };

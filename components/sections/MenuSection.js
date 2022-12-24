@@ -1,4 +1,4 @@
-import { ArrowRightOnRectangleIcon, BuildingOfficeIcon, CalendarDaysIcon, SpeakerWaveIcon } from '@heroicons/react/24/outline'
+import { ArrowRightOnRectangleIcon, BuildingOfficeIcon, CalendarDaysIcon, ClipboardDocumentListIcon, SpeakerWaveIcon } from '@heroicons/react/24/outline'
 import moment from 'moment/moment'
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/router'
@@ -68,10 +68,10 @@ export default function MenuSection() {
                             <a href="#" className="h-full">
                                 <div className="flex flex-col justify-center">
                                     <div className="mx-auto">
-                                        <ArrowRightOnRectangleIcon className="h-6 w-6 text-gray-600" />
+                                        <ClipboardDocumentListIcon className="h-6 w-6 text-gray-600" />
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-600 text-center">Out</p>
+                                        <p className="text-sm text-gray-600 text-center">My Book</p>
                                     </div>
                                 </div>
                             </a>
