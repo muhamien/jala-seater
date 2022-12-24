@@ -6,7 +6,7 @@ import LottieNotFound from "../../assets/lottiefile/not-found.json"
 import { Dropdown } from "flowbite-react";
 import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, useDisclosure } from "@chakra-ui/react";
 import Image from "next/image";
-import { MdOutlineChair } from "react-icons/md";
+import { GrStatusGood, GrCalendar } from "react-icons/gr";
 import { IoMdClose } from "react-icons/io";
 
 export default function DeskMap(props) {
@@ -24,7 +24,7 @@ export default function DeskMap(props) {
     const [deskD, setDeskD] = useState(props.deskD);
 
     const showDeskDetail = (item) => {
-        console.log(item)
+        // console.log(item)
         setDeskSelected(item.fields.id)
         setDeskSelectedAvailale(item.fields.avalability === 'Available' ? true : false);
         onOpen();
@@ -339,7 +339,7 @@ export default function DeskMap(props) {
                                 Desk Detail
                             </div>
                             <button onClick={onClose} type="button" class="ease-out duration-300 inline-flex relative items-center p-2 text-sm font-medium text-center text-gray-900 bg-gray-200 rounded-lg hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-100">
-                                <IoMdClose width={24} height={24}/>
+                                <IoMdClose width={24} height={24} />
                             </button>
                         </div>
                     </DrawerHeader>
@@ -349,46 +349,93 @@ export default function DeskMap(props) {
                                 <div className="flex flex-col h-full justify-between py-3">
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
-                                            <div className="p-2 bg-blue-300 text-blue-900 text-2xl rounded-full">
-                                                <MdOutlineChair width={24} height={24} />
+                                            <div>
+                                                <p className="text-xs text-gray-400">Seat Number</p>
+                                                <h1 className="font-bold leading-none text-gray-900 dark:text-white text-3xl">
+                                                    <a href="#">{deskSelected}</a>
+                                                </h1>
                                             </div>
                                             <div>
-                                                <span className="inline-flex relative items-center p-3 text-sm font-medium text-center text-blue-900 bg-blue-200 rounded-full">
-                                                    {/* <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg> */}
+                                                <span className="inline-flex relative items-center py-4 px-8 text-sm font-medium text-center text-blue-900 bg-blue-200 rounded-full">
                                                     <h2>Available</h2>
                                                 </span>
                                             </div>
                                         </div>
-                                        <h1 className="font-bold leading-none text-gray-900 dark:text-white text-4xl">
-                                            <a href="#">{deskSelected}</a>
-                                        </h1>
                                         <p className="mb-3 text-sm font-normal">
                                             <span className="text-base text-gray-400">No Booked</span>
                                         </p>
                                     </div>
                                     <div className="w-full">
-                                        <button className="ease-out duration-300 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-full">Book this</button>
+                                        <button className="ease-out duration-300 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-full">
+                                            Take Out
+                                        </button>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="py-3">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <a href="#">
-                                            <Image width={40} height={40} className="w-10 h-10 rounded-full" src="https://lh3.googleusercontent.com/a/AEdFTp7fr2N2Vb3se7HyHme7PuTeaiQolw5jcmTxm-Er=s96-c" alt="Jese Leos" />
-                                        </a>
-                                        <div>
-                                            <span className="inline-flex relative items-center p-3 text-sm font-medium text-center text-red-900 bg-red-200 rounded-full">
-                                                <h2>Unavailable</h2>
-                                            </span>
+                                <div className="flex flex-col h-full justify-between py-3">
+                                    <div>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div>
+                                                <p className="text-xs text-gray-400">Seat Number</p>
+                                                <h1 className="font-bold leading-none text-gray-900 dark:text-white text-3xl">
+                                                    <a href="#">{deskSelected}</a>
+                                                </h1>
+                                            </div>
+                                            <div>
+                                                <span className="inline-flex relative items-center py-4 px-8 text-sm font-medium text-center text-green-900 bg-green-200 rounded-full">
+                                                    <h2>Booked</h2>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {/* <p className="mb-3 text-sm font-normal">
+                                            <span className="text-base text-gray-400">No Booked</span>
+                                        </p> */}
+                                        <div className="rounded-lg bg-gray-100 h-auto w-full p-3">
+                                            <div className="flex flex-col gap-3">
+                                                <div className="flex gap-3">
+                                                    <div>
+                                                        <Image src="https://lh3.googleusercontent.com/a/AEdFTp7fr2N2Vb3se7HyHme7PuTeaiQolw5jcmTxm-Er=s96-c" className="w-10 h-10 rounded-full" width={40} height={40} alt="Picture" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 class="text-lg font-semibold leading-none text-gray-900 dark:text-white">
+                                                            <a href="#">Muhammad Amien Rauf</a>
+                                                        </h4>
+                                                        <p class="mb-3 text-sm font-normal">
+                                                            <span class="hover:underline">amien@jala.tech</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-3">
+                                                    <div className="p-2 w-max h-max bg-blue-300 text-blue-700 text-xl rounded-full">
+                                                        <GrCalendar width={20} height={20} />
+                                                    </div>
+                                                    <div className="flex items-center w-full">
+                                                        <h4 class="text-lg font-medium leading-none text-gray-700 dark:text-white">
+                                                            <span>25/12/2022</span>
+                                                        </h4>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-3">
+                                                    <div className="p-2 w-max h-max bg-blue-300 text-blue-700 text-xl rounded-full">
+                                                        <GrStatusGood width={20} height={20} />
+                                                    </div>
+                                                    <div className="flex items-center w-full">
+                                                        <h4 class="text-lg font-medium leading-none text-gray-700 dark:text-white">
+                                                            <span>Waiting to confirm</span>
+                                                        </h4>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <p className="text-base font-semibold leading-none text-gray-900 dark:text-white">
-                                        <a href="#">Muhammad Amien</a>
-                                    </p>
-                                    <p className="mb-3 text-sm font-normal">
-                                        <a href="#" className="hover:underline">amien@jala.tech</a>
-                                    </p>
-                                    <p className="mb-4 text-sm font-light">Booked for Tomorrow</p>
+                                    <div className="w-full flex">
+                                        <button className="ease-out duration-300 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800 w-full">
+                                            Cancel
+                                        </button>
+                                        <button className="ease-out duration-300 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-full">
+                                            Confirm
+                                        </button>
+                                    </div>
                                 </div>
                             )}
                         </div>

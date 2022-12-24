@@ -29,32 +29,32 @@ export default function MenuSection() {
                 </div>
                 <div className="flex-auto sm:flex-1">
                     <div className="lg:grid lg:grid-cols-6 gap-2 flex justify-between">
-                        <div>
-                            <button onClick={() => router.push('/room')} type="button" class="inline-flex relative items-center p-3 text-sm font-medium text-center w-16 h-16 bg-blue-200 hover:bg-blue-300 ease-out duration-300 rounded-lg">
+                        <div className='flex flex-col w-max'>
+                            <button onClick={() => router.push('/room')} type="button" className="inline-flex relative items-center p-3 text-sm font-medium text-center w-16 h-16 bg-blue-200 hover:bg-blue-300 ease-out duration-300 rounded-lg">
                                 <div className="mx-auto text-blue-800">
                                     <HiBuildingOffice2 className="h-6 w-6" />
                                 </div>
                             </button>
                             <p className='text-center'>Room</p>
                         </div>
-                        <div>
-                            <button onClick={() => router.push('/info')} type="button" class="inline-flex relative items-center p-3 text-sm font-medium text-center w-16 h-16 bg-blue-200 hover:bg-blue-300 ease-out duration-300 rounded-lg">
+                        <div className='flex flex-col w-max'>
+                            <button onClick={() => router.push('/info')} type="button" className="inline-flex relative items-center p-3 text-sm font-medium text-center w-16 h-16 bg-blue-200 hover:bg-blue-300 ease-out duration-300 rounded-lg">
                                 <div className="mx-auto text-blue-800">
                                     <HiExclamationCircle className="h-6 w-6" />
                                 </div>
                             </button>
                             <p className='text-center'>Info</p>
                         </div>
-                        <div>
-                            <button onClick={() => router.push('/calendar')} type="button" class="inline-flex relative items-center p-3 text-sm font-medium text-center w-16 h-16 bg-blue-200 hover:bg-blue-300 ease-out duration-300 rounded-lg">
+                        <div className='flex flex-col w-max'>
+                            <button onClick={() => router.push('/calendar')} type="button" className="inline-flex relative items-center p-3 text-sm font-medium text-center w-16 h-16 bg-blue-200 hover:bg-blue-300 ease-out duration-300 rounded-lg">
                                 <div className="mx-auto text-sm text-blue-800">
                                     <HiCalendarDays className="h-6 w-6" />
                                 </div>
                             </button>
                             <p className='text-center'>Calendar</p>
                         </div>
-                        <div>
-                            <button type="button" class="inline-flex relative items-center p-3 text-sm font-medium text-center w-16 h-16 bg-blue-200 hover:bg-blue-300 ease-out duration-300 rounded-lg">
+                        <div className='flex flex-col w-max'>
+                            <button type="button" className="inline-flex relative items-center p-3 text-sm font-medium text-center w-16 h-16 bg-blue-200 hover:bg-blue-300 ease-out duration-300 rounded-lg">
                                 <div className="mx-auto text-blue-800">
                                     <HiClipboardDocumentList className="h-6 w-6" />
                                 </div>
