@@ -3,12 +3,13 @@ import moment from 'moment/moment'
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import { HiBuildingOffice2,HiCalendarDays,HiExclamationCircle,HiClipboardDocumentList } from "react-icons/hi2";
 
 export default function MenuSection() {
     const { data: session, status } = useSession()
     const [greating, setGreating] = useState('Good Morning')
     const router = useRouter();
-    
+
     // useEffect(()=>{
     //     if(moment().format('a') === 'am'){
     //         setGreating('Good Morning')
@@ -28,53 +29,37 @@ export default function MenuSection() {
                 </div>
                 <div className="flex-auto sm:flex-1">
                     <div className="lg:grid lg:grid-cols-6 gap-2 flex justify-between">
-                        <div className="bg-blue-200 hover:bg-blue-300 ease-out duration-300 hover:text-gray-600 w-16 h-16 rounded-lg grid grid-cols-1 place-content-center">
-                            <a href="#" onClick={() => router.push('/room')} className="h-full">
-                                <div className="flex flex-col justify-center">
-                                    <div className="mx-auto">
-                                        <BuildingOfficeIcon className="h-6 w-6 text-gray-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-600 text-center">Rooms</p>
-                                    </div>
+                        <div>
+                            <button onClick={() => router.push('/room')} type="button" class="inline-flex relative items-center p-3 text-sm font-medium text-center w-16 h-16 bg-blue-200 hover:bg-blue-300 ease-out duration-300 rounded-lg">
+                                <div className="mx-auto text-blue-800">
+                                    <HiBuildingOffice2 className="h-6 w-6" />
                                 </div>
-                            </a>
+                            </button>
+                            <p className='text-center'>Room</p>
                         </div>
-                        <div className="bg-blue-200 hover:bg-blue-300 ease-out duration-300 hover:text-gray-600 w-16 h-16 rounded-lg grid grid-cols-1 place-content-center">
-                            <a href="#" onClick={() => router.push('/info')} className="h-full">
-                                <div className="flex flex-col justify-center">
-                                    <div className="mx-auto">
-                                        <SpeakerWaveIcon className="h-6 w-6 text-gray-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-600 text-center">Info</p>
-                                    </div>
+                        <div>
+                            <button onClick={() => router.push('/info')} type="button" class="inline-flex relative items-center p-3 text-sm font-medium text-center w-16 h-16 bg-blue-200 hover:bg-blue-300 ease-out duration-300 rounded-lg">
+                                <div className="mx-auto text-blue-800">
+                                    <HiExclamationCircle className="h-6 w-6" />
                                 </div>
-                            </a>
+                            </button>
+                            <p className='text-center'>Info</p>
                         </div>
-                        <div className="bg-blue-200 hover:bg-blue-300 ease-out duration-300 hover:text-gray-600 w-16 h-16 rounded-lg grid grid-cols-1 place-content-center">
-                            <a href="#" onClick={() => router.push('/calendar')} className="h-full">
-                                <div className="flex flex-col justify-center">
-                                    <div className="mx-auto">
-                                        <CalendarDaysIcon className="h-6 w-6 text-gray-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-600 text-center">Calendar</p>
-                                    </div>
+                        <div>
+                            <button onClick={() => router.push('/calendar')} type="button" class="inline-flex relative items-center p-3 text-sm font-medium text-center w-16 h-16 bg-blue-200 hover:bg-blue-300 ease-out duration-300 rounded-lg">
+                                <div className="mx-auto text-sm text-blue-800">
+                                    <HiCalendarDays className="h-6 w-6" />
                                 </div>
-                            </a>
+                            </button>
+                            <p className='text-center'>Calendar</p>
                         </div>
-                        <div className="bg-blue-200 hover:bg-blue-300 ease-out duration-300 hover:text-gray-600 w-16 h-16 rounded-lg grid grid-cols-1 place-content-center">
-                            <a href="#" className="h-full">
-                                <div className="flex flex-col justify-center">
-                                    <div className="mx-auto">
-                                        <ClipboardDocumentListIcon className="h-6 w-6 text-gray-600" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-600 text-center">My Book</p>
-                                    </div>
+                        <div>
+                            <button type="button" class="inline-flex relative items-center p-3 text-sm font-medium text-center w-16 h-16 bg-blue-200 hover:bg-blue-300 ease-out duration-300 rounded-lg">
+                                <div className="mx-auto text-blue-800">
+                                    <HiClipboardDocumentList className="h-6 w-6" />
                                 </div>
-                            </a>
+                            </button>
+                            <p className='text-center'>My Book</p>
                         </div>
                     </div>
                 </div>

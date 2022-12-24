@@ -7,6 +7,7 @@ import { Dropdown } from "flowbite-react";
 import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, useDisclosure } from "@chakra-ui/react";
 import Image from "next/image";
 import { MdOutlineChair } from "react-icons/md";
+import { IoMdClose } from "react-icons/io";
 
 export default function DeskMap(props) {
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -332,44 +333,53 @@ export default function DeskMap(props) {
             <Drawer placement={placement} onClose={onClose} isOpen={isOpen}>
                 <DrawerOverlay />
                 <DrawerContent>
-                    <DrawerHeader borderBottomWidth='1px'>Desk Detail</DrawerHeader>
+                    <DrawerHeader borderBottomWidth='1px'>
+                        <div className="flex justify-between">
+                            <div>
+                                Desk Detail
+                            </div>
+                            <button onClick={onClose} type="button" class="ease-out duration-300 inline-flex relative items-center p-2 text-sm font-medium text-center text-gray-900 bg-gray-200 rounded-lg hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-100">
+                                <IoMdClose width={24} height={24}/>
+                            </button>
+                        </div>
+                    </DrawerHeader>
                     <DrawerBody>
                         <div className="h-96">
                             {deskSelectedAvailale ? (
-                                <div className="p-3">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="p-3 bg-blue-300 text-blue-900 text-2xl rounded-full">
-                                            <MdOutlineChair width={24} height={24}/>
+                                <div className="flex flex-col h-full justify-between py-3">
+                                    <div>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="p-2 bg-blue-300 text-blue-900 text-2xl rounded-full">
+                                                <MdOutlineChair width={24} height={24} />
+                                            </div>
+                                            <div>
+                                                <span className="inline-flex relative items-center p-3 text-sm font-medium text-center text-blue-900 bg-blue-200 rounded-full">
+                                                    {/* <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg> */}
+                                                    <h2>Available</h2>
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <button type="button" className="inline-flex relative items-center p-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                                {/* <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg> */}
-                                                <h2>Available</h2>
-                                                <span className="sr-only">Notifications</span>
-                                                {/* <div className="inline-flex absolute -top-2 -right-2 justify-center items-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900">20</div> */}
-                                            </button>
-                                        </div>
+                                        <h1 className="font-bold leading-none text-gray-900 dark:text-white text-4xl">
+                                            <a href="#">{deskSelected}</a>
+                                        </h1>
+                                        <p className="mb-3 text-sm font-normal">
+                                            <span className="text-base text-gray-400">No Booked</span>
+                                        </p>
                                     </div>
-                                    <h1 className="font-bold leading-none text-gray-900 dark:text-white text-4xl">
-                                        <a href="#">{deskSelected}</a>
-                                    </h1>
-                                    <p className="mb-3 text-sm font-normal">
-                                        <span className="text-base text-gray-400">No Booked</span>
-                                    </p>
+                                    <div className="w-full">
+                                        <button className="ease-out duration-300 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-full">Book this</button>
+                                    </div>
                                 </div>
                             ) : (
-                                <div className="p-3">
+                                <div className="py-3">
                                     <div className="flex items-center justify-between mb-2">
                                         <a href="#">
                                             <Image width={40} height={40} className="w-10 h-10 rounded-full" src="https://lh3.googleusercontent.com/a/AEdFTp7fr2N2Vb3se7HyHme7PuTeaiQolw5jcmTxm-Er=s96-c" alt="Jese Leos" />
                                         </a>
                                         <div>
-                                            <button type="button" className="inline-flex relative items-center p-3 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
-                                                {/* <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg> */}
+                                            <span className="inline-flex relative items-center p-3 text-sm font-medium text-center text-red-900 bg-red-200 rounded-full">
                                                 <h2>Unavailable</h2>
-                                                <span className="sr-only">Notifications</span>
-                                                {/* <div className="inline-flex absolute -top-2 -right-2 justify-center items-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900">20</div> */}
-                                            </button>
+                                            </span>
                                         </div>
                                     </div>
                                     <p className="text-base font-semibold leading-none text-gray-900 dark:text-white">
