@@ -6,16 +6,16 @@ import { useEffect, useState } from 'react'
 
 export default function MenuSection() {
     const { data: session, status } = useSession()
-    const [greating, setGreating] = useState()
+    const [greating, setGreating] = useState('Good Morning')
     const router = useRouter();
     
-    useEffect(()=>{
-        if(moment().format('a') === 'am'){
-            setGreating('Good Morning')
-        } else {
-            setGreating('Good Evening')
-        }
-    })
+    // useEffect(()=>{
+    //     if(moment().format('a') === 'am'){
+    //         setGreating('Good Morning')
+    //     } else {
+    //         setGreating('Good Evening')
+    //     }
+    // })
 
     return (
         <>
